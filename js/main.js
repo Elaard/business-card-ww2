@@ -49,35 +49,45 @@ function initContactForm() {
 
     if (!form) return;
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            message: document.getElementById('message').value
-        };
-
         // Basic validation
-        if (!formData.name || !formData.email || !formData.message) {
+        const name = document.getElementById('name').value;
+        const email = document.querySelector('input[name="_replyto"]').value;
+        const message = document.getElementById('message').value;
+
+        if (!name || !email || !message) {
             showMessage('Proszę wypełnić wszystkie wymagane pola.', 'error');
             return;
         }
 
-        if (!isValidEmail(formData.email)) {
+        if (!isValidEmail(email)) {
             showMessage('Podaj poprawny adres email.', 'error');
             return;
         }
 
-        // In production, send to server
-        // For now, just show success message
-        console.log('Form data:', formData);
-        showMessage('Dziękuję za wiadomość. Odpiszę w ciągu 24h.', 'success');
-        form.reset();
+        // Send to Formspree
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
 
-        // Actual implementation would be:
-        // sendFormData(formData);
+            if (response.ok) {
+                showMessage('Dziękuję za wiadomość. Odpiszę w ciągu 24h.', 'success');
+                form.reset();
+            } else {
+                throw new Error('Form submission failed');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('Coś poszło nie tak. Spróbuj ponownie lub napisz bezpośrednio na anna@dotacje-firma.pl', 'error');
+        }
     });
 }
 
