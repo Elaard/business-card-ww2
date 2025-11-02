@@ -83,10 +83,6 @@ a {
   transition: var(--transition);
 }
 
-a:hover {
-  color: var(--navy-light);
-}
-
 /* ============================================
    TYPOGRAPHY
    ============================================ */
@@ -282,6 +278,10 @@ section {
 .btn-simple:hover {
   background-color: var(--navy-light);
   transform: translateY(-1px);
+}
+
+a:hover {
+  color: var(white);
 }
 
 /* ============================================
